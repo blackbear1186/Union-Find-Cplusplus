@@ -1,0 +1,4 @@
+# press control, shift, and down arrow at same time to select several lines
+# To use regex space out functions: 
+    Press: control + F, type in semicolon into find,
+           type {\n\t\n}\n into Replace to space out
