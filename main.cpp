@@ -14,9 +14,12 @@ int main(int argc, char *argv[]){
     myClass.printArray();
     myClass.unionNumbers(9, 4);
     myClass.unionNumbers(4, 2);
+    myClass.unionNumbers(7, 5);
+    myClass.unionNumbers(5, 2);
     myClass.printArray();
     myClass.isConnected(9, 2);
-    myClass.isConnected(3, 2);
+    myClass.isConnected(4, 9);
+    myClass.isConnected(5, 4);
 
     } catch (MyException &e) {
         cout << e.what() << endl;

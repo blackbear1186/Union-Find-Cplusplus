@@ -14,6 +14,7 @@ class C_unionFind{
         void isConnected(int, int);
         void printArray();
 
+
     private:
         int *p_dataArray;
         int p_arraySize;
@@ -23,6 +24,7 @@ class C_unionFind{
         bool p_isConnected(int, int);
         void p_printArray();
         int p_verifyRange(int, int);
+        int p_find(int);
 
 };
 

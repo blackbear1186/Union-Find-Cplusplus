@@ -33,7 +33,12 @@ void C_unionFind::initArray(int initSize){
     }
 }
 
-
+int C_unionFind::p_find(int num){
+    while( num != this->p_dataArray[num]){
+        num = this->p_dataArray[num];
+    }
+    return num;
+}
 
 void C_unionFind::unionNumbers(int numOne, int numTwo){
 
@@ -47,6 +52,9 @@ void C_unionFind::unionNumbers(int numOne, int numTwo){
     if( 0 != retValue){
         throw MyException("ERROR: Provided value(s) is not in range of array.");
     } else {
+            if(this->p_find(numOne) == this->p_find(numTwo)){
+                return;
+            }
             // if the numbers are less the array size call union function
             this->p_unionNumbers(numOne, numTwo);
 
@@ -127,7 +135,8 @@ void C_unionFind::p_unionNumbers(int numOne, int numTwo){
         // if p_dataArray[index] equals numTwo, then assign that value in
         if(this->p_dataArray[index] == numOne){
             this->p_dataArray[index] = numTwo;
-            // connected INDEX to numTwo for debugging
+            // connected INDEX to numTwonumOne for debugging
+
         }
     }
 	
@@ -140,7 +149,7 @@ bool C_unionFind::p_isConnected(int numOne, int numTwo){
     bool connectionVerified = false;
 
     // if the value of numOne equals to numTwo return true
-	if(this->p_dataArray[numOne] == numTwo){
+	if(this->p_find(numOne) == this->p_find(numTwo)){
         connectionVerified = true;
     }
 
