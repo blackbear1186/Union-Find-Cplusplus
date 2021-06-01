@@ -1,4 +1,4 @@
-#include "UnionFind.h"
+#include "weightedUnion.h"
 #include "customErrorClass.h"
 
 using namespace std;
@@ -10,16 +10,17 @@ enum RETURN_STATES{
     FAILED,
 };
 
-C_unionFind::C_unionFind(){
+C_weightedUnion::C_weightedUnion(){
         this->p_dataArray = NULL;
+        this->p_weight = NULL;
         this->p_arraySize = 0;
 }
 
-C_unionFind::~C_unionFind(){
+C_weightedUnion::~C_weightedUnion(){
         delete[] this->p_dataArray;
 }
     
-void C_unionFind::initArray(int initSize){
+void C_weightedUnion::initArray(int initSize){
     // exception to prevent user from intializing the array more than once
 	if(NULL != this->p_dataArray){
         throw MyException("WARNING: Cannot initialize array twice; not re-initializating.");
@@ -33,17 +34,24 @@ void C_unionFind::initArray(int initSize){
     }
 }
 
-int C_unionFind::p_find(int num){
+int C_weightedUnion::p_findRoot(int num){
+    /*
     while( num != this->p_dataArray[num]){
         num = this->p_dataArray[num];
     }
     return num;
+    */
+
+   if (num == this->p_dataArray[num]){
+       return num;
+   } else {
+       int root = 0;
+       root = p_findRoot(this->p_dataArray[num]);
+       return root;
+   }
 }
 
-void C_unionFind::unionNumbers(int numOne, int numTwo){
-
-    int rootNum1 = this->p_find(numOne);
-    int rootNum2 = this->p_find(numTwo);
+void C_weightedUnion::weightedUnion(int numOne, int numTwo){
 
     int retValue = 0;
     // set retValue equal to value return from verifyRange based
@@ -55,12 +63,8 @@ void C_unionFind::unionNumbers(int numOne, int numTwo){
     if( 0 != retValue){
         throw MyException("ERROR: Provided value(s) is not in range of array.");
     } else {
-            // If the two elements enter have the same value ignore
-            if(rootNum1 == rootNum2){
-                return;
-            }
             // if the numbers are less the array size call union function
-            this->p_unionNumbers(numOne, numTwo);
+            this->p_weightedUnion(numOne, numTwo);
 
     }
 
@@ -75,7 +79,7 @@ void C_unionFind::unionNumbers(int numOne, int numTwo){
     }
 }
 
-void C_unionFind::isConnected(int numOne, int numTwo){
+void C_weightedUnion::isConnected(int numOne, int numTwo){
 
     bool verifyConnection = false;
 
@@ -102,7 +106,7 @@ void C_unionFind::isConnected(int numOne, int numTwo){
 
 }
 
-void C_unionFind::printArray(){
+void C_weightedUnion::printArray(){
 	if(NULL == this->p_dataArray){
         throw MyException("WARNING: No array to print.");
     } else {
@@ -111,12 +115,14 @@ void C_unionFind::printArray(){
 }
 
 
-void C_unionFind::p_initArray(int initSize){
+void C_weightedUnion::p_initArray(int initSize){
 	if( 0 > initSize){
         throw MyException("ERROR: Cannot create array with negative value.");
     } else {
         // create p_dataArray and dynamic store in memory
         this->p_dataArray = new int[initSize];
+        // Create p_weight array to keep track of the size of each tree
+        this->p_weight = new int[initSize];
 
         // set p_arraySize equal to array size input by user as parameter
         this->p_arraySize = initSize;
@@ -127,46 +133,61 @@ void C_unionFind::p_initArray(int initSize){
             this->p_dataArray = new[this->p_arraySize]
         */
 
+        // initializes empty p_dataArray and p_weight array with n through n - 1 elements.
         for(int index = 0; index < this->p_arraySize; ++index){
             this->p_dataArray[index] = index;
+            this->p_weight[index] = 0;
         }
     }
 }
 
-void C_unionFind::p_unionNumbers(int numOne, int numTwo){
+void C_weightedUnion::p_weightedUnion(int numOne, int numTwo){
 
-    for (int index = 0; index < this->p_arraySize; ++index){
-        // if p_dataArray[index] equals numTwo, then assign that value in
-        if(this->p_dataArray[index] == numOne){
-            this->p_dataArray[index] = numTwo;
-            // connected INDEX to numTwonumOne for debugging
+    int rootNum1 = this->p_findRoot(numOne);
+    int rootNum2 = this->p_findRoot(numTwo);
 
+    // if rootNum1 tree is smaller or equal to rootNum2 tree, then merge rootNum1 tree with rootNum2 tree
+    if(this->p_weight[rootNum1] <= this->p_weight[rootNum2]){
+        this->p_dataArray[rootNum1] = rootNum2;
+
+        // if the size of root number 1 is equal to zero, set rootNum2 to 1
+        if( 0 == this->p_weight[rootNum1]){
+            this->p_weight[rootNum2] = 1;
+        } else {
+            // increase size of root number 2 by size of root number 1 and subtract 1
+            this->p_weight[rootNum2] += this->p_weight[rootNum1] - 1;
+        }
+    } else {
+        // if rootNum1 tree is greater than rootNum2, then merge rootNum2 tree with rootNum1 tree
+        this->p_dataArray[rootNum2] = rootNum1;
+
+        if(0 == this->p_weight[rootNum2]){
+            this->p_weight[rootNum1] = 1;
+        } else {
+            this->p_weight[rootNum1] += this->p_weight[rootNum2] - 1;
         }
     }
-	
-    this->p_dataArray[numOne] = numTwo;
-
-
+    return;
 }
 
-bool C_unionFind::p_isConnected(int numOne, int numTwo){
+bool C_weightedUnion::p_isConnected(int numOne, int numTwo){
     bool connectionVerified = false;
 
     // if the value of numOne equals to numTwo return true
-	if(this->p_find(numOne) == this->p_find(numTwo)){
+	if(this->p_findRoot(numOne) == this->p_findRoot(numTwo)){
         connectionVerified = true;
     }
 
     return connectionVerified;
 }
 
-void C_unionFind::p_printArray(){
+void C_weightedUnion::p_printArray(){
 	for(int index = 0; index < this->p_arraySize; ++index){
         cout << "array["<<index<<"] = "<< this->p_dataArray[index] << endl;
     }
 }
 
-int C_unionFind::p_verifyRange(int numOne, int numTwo){
+int C_weightedUnion::p_verifyRange(int numOne, int numTwo){
 
     // negative one is a failure condition
     int retVal = -1;

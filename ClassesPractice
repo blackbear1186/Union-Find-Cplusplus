@@ -42,9 +42,6 @@ int C_unionFind::p_find(int num){
 
 void C_unionFind::unionNumbers(int numOne, int numTwo){
 
-    int rootNum1 = this->p_find(numOne);
-    int rootNum2 = this->p_find(numTwo);
-
     int retValue = 0;
     // set retValue equal to value return from verifyRange based
     // on sucess or failure integer (-1 for failure, 0 for success)
@@ -56,7 +53,7 @@ void C_unionFind::unionNumbers(int numOne, int numTwo){
         throw MyException("ERROR: Provided value(s) is not in range of array.");
     } else {
             // If the two elements enter have the same value ignore
-            if(rootNum1 == rootNum2){
+            if(this->p_find(numOne) == this->p_find(numTwo)){
                 return;
             }
             // if the numbers are less the array size call union function
